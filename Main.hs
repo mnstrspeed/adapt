@@ -30,7 +30,7 @@ printTree doc = case doc of
 		(k ++ " => ") : map indent (printTree x) ++ ks) [] m
 	Leaf text -> ["\"" ++ text ++ "\""]
 	where
-		indent = ("  " ++)
+		indent = (". " ++)
 
 main = do
 	res <- parseFromFile pDocument "test.adapt"
