@@ -36,4 +36,4 @@ main = do
 	res <- parseFromFile pDocument "test.adapt"
 	case res of 
 		Right doc -> putStrLn . unlines. prettyPrint $ doc
-		-- Right doc -> putStrLn . show $ doc
+		Left error -> putStrLn $ show error
