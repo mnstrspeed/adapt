@@ -23,11 +23,11 @@ pDocument = Node <$> many (pAdaptive <|> pLeaf)
 		pLeaf :: Parser Document
 		pLeaf = Leaf <$> (many1 $ noneOf "[|]")
 
-prettyPrint :: Document -> [String]
-prettyPrint doc = case doc of
-	Node nodes -> "<<Node>>" : (concat $ map (map indent . prettyPrint) nodes)
+printTree :: Document -> [String]
+printTree doc = case doc of
+	Node nodes -> "<<Node>>" : (concat $ map (map indent . printTree) nodes)
 	Adaptive m -> M.foldWithKey (\k x ks ->
-		(k ++ " => ") : map indent (prettyPrint x) ++ ks) [] m
+		(k ++ " => ") : map indent (printTree x) ++ ks) [] m
 	Leaf text -> ["\"" ++ text ++ "\""]
 	where
 		indent = ("  " ++)
@@ -35,5 +35,5 @@ prettyPrint doc = case doc of
 main = do
 	res <- parseFromFile pDocument "test.adapt"
 	case res of 
-		Right doc -> putStrLn . unlines. prettyPrint $ doc
+		Right doc -> putStrLn . unlines. printTree $ doc
 		Left error -> putStrLn $ show error
