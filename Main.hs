@@ -1,6 +1,7 @@
 import qualified Data.Map as M
 import Control.Applicative hiding (many, (<|>), )
 import Text.ParserCombinators.Parsec
+import System.Environment
 
 data Document = Node [Document] 
               | Leaf String 
@@ -8,10 +9,10 @@ data Document = Node [Document]
 
 pDocument = Node <$> many (pAdaptive <|> pLeaf)
 	where
-		pAdaptive = 
-			char '[' *> spaces *> 
-			(Adaptive . M.fromList <$> pAdaptiveOpt `sepBy` char '|')
-			<* spaces <* char ']'
+		pAdaptive = char '[' *> spaces *> pAdaptiveBody <* spaces <* char ']'
+		
+		pAdaptiveBody = adaptive <$> pAdaptiveOpt `sepBy` char '|'
+			where adaptive = Adaptive . M.fromList
 
 		pAdaptiveOpt :: Parser (String, Document)
 		pAdaptiveOpt = do
@@ -33,7 +34,10 @@ printTree doc = case doc of
 		indent = (". " ++)
 
 main = do
-	res <- parseFromFile pDocument "test.adapt"
-	case res of 
-		Right doc -> putStrLn . unlines. printTree $ doc
+	input <- getArgs >>= \t -> case t of
+		[path] -> readFile path
+		_ -> getContents	
+
+	case parse pDocument "document" input of 
+		Right doc -> putStrLn . unlines . printTree $ doc
 		Left error -> putStrLn $ show error
