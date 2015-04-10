@@ -21,7 +21,7 @@ pAdaptiveOpt = do
 	return (key, value)
 
 pLeaf :: Parser Document
-pLeaf = Leaf <$> (many1 $ noneOf "[]")
+pLeaf = Leaf <$> (many1 $ noneOf "[|]")
 
 prettyPrint :: Document -> [String]
 prettyPrint doc = case doc of
