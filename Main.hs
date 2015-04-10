@@ -10,7 +10,7 @@ pDocument = Node <$> many (pAdaptive <|> pLeaf)
 
 pAdaptive = 
 	char '[' *> spaces *> 
-	(Adaptive <$> M.fromList <$> (pAdaptiveOpt `sepBy` (char '|')))
+	(Adaptive . M.fromList <$> pAdaptiveOpt `sepBy` char '|')
 	<* spaces <* char ']'
 
 pAdaptiveOpt :: Parser (String, Document)
