@@ -7,21 +7,21 @@ data Document = Node [Document]
               | Adaptive (M.Map String Document) deriving (Show)
 
 pDocument = Node <$> many (pAdaptive <|> pLeaf)
+	where
+		pAdaptive = 
+			char '[' *> spaces *> 
+			(Adaptive . M.fromList <$> pAdaptiveOpt `sepBy` char '|')
+			<* spaces <* char ']'
 
-pAdaptive = 
-	char '[' *> spaces *> 
-	(Adaptive . M.fromList <$> pAdaptiveOpt `sepBy` char '|')
-	<* spaces <* char ']'
+		pAdaptiveOpt :: Parser (String, Document)
+		pAdaptiveOpt = do
+			key <- many1 alphaNum
+			spaces *> string "=>" <* spaces
+			value <- pDocument
+			return (key, value)
 
-pAdaptiveOpt :: Parser (String, Document)
-pAdaptiveOpt = do
-	key <- many alphaNum
-	spaces *> string "=>" <* spaces
-	value <- pDocument
-	return (key, value)
-
-pLeaf :: Parser Document
-pLeaf = Leaf <$> (many1 $ noneOf "[|]")
+		pLeaf :: Parser Document
+		pLeaf = Leaf <$> (many1 $ noneOf "[|]")
 
 prettyPrint :: Document -> [String]
 prettyPrint doc = case doc of
