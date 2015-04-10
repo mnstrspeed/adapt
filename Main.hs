@@ -27,7 +27,7 @@ prettyPrint :: Document -> [String]
 prettyPrint doc = case doc of
 	Node nodes -> "<<Node>>" : (concat $ map (map indent . prettyPrint) nodes)
 	Adaptive m -> M.foldWithKey (\k x ks ->
-		((k ++ " => ") : map indent (prettyPrint x) ++ ks)) [] m
+		(k ++ " => ") : map indent (prettyPrint x) ++ ks) [] m
 	Leaf text -> ["\"" ++ text ++ "\""]
 	where
 		indent = ("  " ++)
