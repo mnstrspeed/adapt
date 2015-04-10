@@ -33,6 +33,12 @@ printTree doc = case doc of
 	where
 		indent = (". " ++)
 
+adapt :: Document -> String
+adapt doc = case doc of
+	Node nodes -> concatMap adapt nodes
+	Leaf text -> text
+	Adaptive map -> "adaptive"
+
 main = do
 	input <- getArgs >>= \t -> case t of
 		[path] -> readFile path
