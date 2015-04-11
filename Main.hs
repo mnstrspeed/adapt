@@ -1,9 +1,9 @@
-import Control.Applicative hiding (many, (<|>), )
+import Control.Applicative ((<$>), (*>), (<*), empty, )
 import Text.ParserCombinators.Parsec
-import System.Environment
-import Data.Maybe
 import qualified Data.Map as M
 import qualified Data.List as L
+import Data.Maybe
+import System.Environment
 
 data Document = Node [Document] 
               | Leaf String 
