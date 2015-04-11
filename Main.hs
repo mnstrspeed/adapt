@@ -7,7 +7,8 @@ import System.Environment
 
 data Document = Node [Document] 
               | Leaf String 
-              | Adaptive (M.Map String Document) deriving (Show)
+              | Adaptive (M.Map String Document) 
+              deriving (Show)
 
 pDocument = Node <$> many (pAdaptive <|> pLeaf)
 	where
