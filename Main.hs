@@ -45,8 +45,8 @@ adapt context doc = case doc of
 
 main = do
 	(path : tags) <- getArgs
-	doc <- parseFromFile pDocument path
+	doc <- parseFromFile pDocument $ path ++ ".adapt"
 	case doc of 
 		--Right doc -> putStrLn . unlines . printTree $ doc
-		Right doc -> putStrLn $ adapt tags doc
+		Right doc -> writeFile path $ adapt tags doc
 		Left error -> putStrLn $ show error
