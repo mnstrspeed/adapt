@@ -13,18 +13,13 @@ data Document = Node [Document]
 pDocument = Node <$> many (pAdaptive <|> pLeaf)
 	where
 		pAdaptive = char '[' *> spaces *> pAdaptiveBody <* spaces <* char ']'
-		
 		pAdaptiveBody = adaptive <$> pAdaptiveOpt `sepBy` char '|'
 			where adaptive = Adaptive . M.fromList
-
-		pAdaptiveOpt :: Parser (String, Document)
 		pAdaptiveOpt = do
 			key <- many1 alphaNum
 			spaces *> string "=>" <* spaces
 			value <- pDocument
 			return (key, value)
-
-		pLeaf :: Parser Document
 		pLeaf = Leaf <$> (many1 $ noneOf "[|]")
 
 adapt :: [String] -> Document -> String
