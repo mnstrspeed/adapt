@@ -1,4 +1,6 @@
 import qualified Data.Map as M
+import qualified Data.List as L
+import Data.Maybe
 import Control.Applicative hiding (many, (<|>), )
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -33,17 +35,18 @@ printTree doc = case doc of
 	where
 		indent = (". " ++)
 
-adapt :: Document -> String
-adapt doc = case doc of
-	Node nodes -> concatMap adapt nodes
+adapt :: [String] -> Document -> String
+adapt context doc = case doc of
+	Node nodes -> concatMap (adapt context) nodes
 	Leaf text -> text
-	Adaptive map -> "adaptive"
+	Adaptive map -> case L.find (flip elem $ M.keys map) context of
+		Just key -> adapt context (fromJust $ M.lookup key map)
+		Nothing -> empty
 
 main = do
-	input <- getArgs >>= \t -> case t of
-		[path] -> readFile path
-		_ -> getContents	
-
-	case parse pDocument "document" input of 
-		Right doc -> putStrLn . unlines . printTree $ doc
+	(path : tags) <- getArgs
+	doc <- parseFromFile pDocument path
+	case doc of 
+		--Right doc -> putStrLn . unlines . printTree $ doc
+		Right doc -> putStrLn $ adapt tags doc
 		Left error -> putStrLn $ show error
