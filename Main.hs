@@ -12,13 +12,13 @@ data Document = Node [Document]
 
 pDocument = Node <$> many (pAdaptive <|> pLeaf)
 	where
-		pAdaptive = char '[' *> spaces *> pAdaptiveBody <* spaces <* char ']'
+		pAdaptive = char '[' *> pAdaptiveBody <* char ']'
 		pAdaptiveBody = adaptive <$> pAdaptiveOpt `sepBy` char '|'
 			where adaptive = Adaptive . M.fromList
 		pAdaptiveOpt = do
-			key <- many1 alphaNum
-			spaces *> string "=>" <* spaces
-			value <- pDocument
+			key <- spaces *> many1 alphaNum <* spaces
+			string "=>"
+			value <- spaces *> pDocument <* spaces
 			return (key, value)
 		pLeaf = Leaf <$> (many1 $ pChar)
 		pChar = pEscapedChar <|> noneOf "[|]" 
