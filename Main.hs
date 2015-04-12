@@ -20,7 +20,9 @@ pDocument = Node <$> many (pAdaptive <|> pLeaf)
 			spaces *> string "=>" <* spaces
 			value <- pDocument
 			return (key, value)
-		pLeaf = Leaf <$> (many1 $ noneOf "[|]")
+		pLeaf = Leaf <$> (many1 $ pChar)
+		pChar = pEscapedChar <|> noneOf "[|]" 
+		pEscapedChar = char '\\' *> anyChar
 
 adapt :: [String] -> Document -> String
 adapt context doc = case doc of
